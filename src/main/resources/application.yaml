@@ -17,5 +17,4 @@ server:
 app:
   jwt:
     refresh-token-expiration: 604800000
-    secret: ${KEY}
     expiration: 900000
