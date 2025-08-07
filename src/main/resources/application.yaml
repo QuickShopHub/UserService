@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+
+
+server:
+  port: 8444
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12  # путь к .p12 файлу
+    key-store-password: changeit  # пароль от .p12
+    key-store-type: PKCS12
+
+
+app:
+  jwt:
+    refresh-token-expiration: 604800000
+    secret: ${KEY}
+    expiration: 900000
