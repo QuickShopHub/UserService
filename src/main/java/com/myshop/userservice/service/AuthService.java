@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -52,7 +53,7 @@ public class AuthService {
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
-
+        refreshTokenRepository.save(refreshToken);
 
         String cookieValue = "refresh_token=" + refreshToken.getRefreshToken();
         String cookieAttributes =
@@ -62,7 +63,7 @@ public class AuthService {
                         "; Secure" +
                         "; SameSite=Strict";
         response.addHeader("Set-Cookie", cookieValue + cookieAttributes);
-        return ResponseEntity.ok(jwtService.generateToken(user));
+        return ResponseEntity.ok(jwtService.generateToken(user, List.of("USER")));
     }
 
     public ResponseEntity<String> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
@@ -104,7 +105,7 @@ public class AuthService {
                         "; Secure" +
                         "; SameSite=Strict";
         response.addHeader("Set-Cookie", cookieValue + cookieAttributes);
-        return ResponseEntity.ok(jwtService.generateToken(user));
+        return ResponseEntity.ok(jwtService.generateToken(user, List.of("USER")));
 
     }
 

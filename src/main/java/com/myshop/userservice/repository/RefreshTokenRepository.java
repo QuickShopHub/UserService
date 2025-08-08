@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID> {
 
-    @Query(value = "SELECT * FROM refresh_tokens WHERE token = :token",  nativeQuery = true)
+    @Query(value = "SELECT * FROM refresh_tokens WHERE refresh_token = :token",  nativeQuery = true)
     Optional<RefreshToken> findByToken(String token);
 
     @Modifying

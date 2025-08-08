@@ -20,6 +20,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -94,10 +95,10 @@ public class JwtService {
     }
 
 
-    public String generateToken(User user) {
+    public String generateToken(User user, List<String> roles) {
         return Jwts.builder()
                 .setSubject(user.getId().toString())
-                .claim("role", "USER")
+                .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(privateKey, SignatureAlgorithm.RS256)
