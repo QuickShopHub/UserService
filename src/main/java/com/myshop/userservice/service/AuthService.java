@@ -57,7 +57,7 @@ public class AuthService {
 
         String cookieValue = "refresh_token=" + refreshToken.getRefreshToken();
         String cookieAttributes =
-                "; Path=/api/auth/" +
+                "; Path=/" +
                         "; Max-Age=604800" +
                         "; HttpOnly" +
                         "; Secure" +
@@ -99,14 +99,12 @@ public class AuthService {
 
         String cookieValue = "refresh_token=" + refreshToken.getRefreshToken();
         String cookieAttributes =
-                "; Path=/api/auth/" +
+                "; Path=/" +
                         "; Max-Age=604800" +
                         "; HttpOnly" +
                         "; Secure" +
                         "; SameSite=Strict";
         response.addHeader("Set-Cookie", cookieValue + cookieAttributes);
         return ResponseEntity.ok(jwtService.generateToken(user, List.of("USER")));
-
     }
-
 }

@@ -6,6 +6,7 @@ import com.myshop.userservice.service.AuthService;
 import com.myshop.userservice.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,8 @@ public class TokenController {
         return authService.login(authDTO, response);
     }
 
-    @PostMapping(path = "/auth/new_login")
+    @Transactional
+    @PostMapping(path = "/auth/signup")
     public ResponseEntity<String> addUser(@RequestBody @Valid UserDTO newUser, HttpServletResponse response) {
 
         if(userService.addUser(newUser) == 1){

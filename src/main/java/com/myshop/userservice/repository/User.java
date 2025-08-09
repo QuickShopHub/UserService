@@ -3,6 +3,7 @@ package com.myshop.userservice.repository;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class User {
 
     private String password;
 
+    @Email(message = "Некорректный формат email")
     private String email;
 
     @Column(name = "createdat")

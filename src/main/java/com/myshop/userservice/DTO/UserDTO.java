@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Email;
 
 @Data
 @AllArgsConstructor
@@ -13,7 +14,8 @@ public class UserDTO {
     @NotBlank(message = "Поле 'username' обязательно")
     private String username;
 
-    @NotBlank(message = "Поле 'email' обязательно")
+
+    @Email(message = "Некорректный формат email")
     private String email;
 
     @NotBlank(message = "Поле 'password' обязательно")

@@ -2,8 +2,7 @@ package com.myshop.userservice.service;
 
 
 import com.myshop.userservice.repository.User;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -105,33 +104,27 @@ public class JwtService {
                 .compact();
     }
 
-    public UUID getUserIdFromToken(String token) {
-        String subject = Jwts.parserBuilder()
-                .setSigningKey(publicKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-        return UUID.fromString(subject);
+
+    public Claims validateToken(String token) {
+        if (token == null || token.trim().isEmpty()) {
+            throw new RuntimeException("JWT token is missing");
+        }
+
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(publicKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException ex) {
+            // Токен просрочен
+            throw ex;
+        } catch (JwtException | IllegalArgumentException ex) {
+            // Токен некорректный, неверный, подпись не совпадает и т.п.
+            throw new RuntimeException("Invalid JWT token", ex);
+        }
     }
 
-    public boolean isTokenValid(String token, User user) {
-        final UUID userId = getUserIdFromToken(token);
-        return (userId.equals(user.getId()) && !isTokenExpired(token));
-    }
 
 
-    private boolean isTokenExpired(String token) {
-        return getExpiration(token).before(new Date());
-    }
-
-
-    private Date getExpiration(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(publicKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getExpiration();
-    }
 }
