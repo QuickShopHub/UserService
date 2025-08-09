@@ -1,11 +1,13 @@
 package com.myshop.userservice.config;
 
 
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.validation.ConstraintViolationException;
+
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,4 +22,5 @@ public class GlobalExceptionHandler {
         });
         return ResponseEntity.badRequest().body(errors.toString());
     }
+
 }

@@ -30,7 +30,7 @@ public class TokenController {
 
     @Transactional
     @PostMapping(path = "/auth/signup")
-    public ResponseEntity<String> addUser(@RequestBody @Valid UserDTO newUser, HttpServletResponse response) {
+    public ResponseEntity<String> addUser(@RequestBody UserDTO newUser, HttpServletResponse response) {
 
         if(userService.addUser(newUser) == 1){
             return ResponseEntity.badRequest().body("Email уже существует");
