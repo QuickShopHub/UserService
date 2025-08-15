@@ -25,7 +25,7 @@ public class TokenController {
     @PostMapping(path = "/auth/login")
     public ResponseEntity<String> createToken(@RequestBody AuthDTO authDTO, HttpServletResponse response) {
 
-        return authService.login(authDTO, response);
+        return authService.login(authDTO,  response);
     }
 
     @Transactional

@@ -31,4 +31,6 @@ public class User {
     @Column(name = "createdat")
     private LocalDate createdAt;
 
+    private boolean admin = false;
+
 }

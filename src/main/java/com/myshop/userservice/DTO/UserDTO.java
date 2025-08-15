@@ -20,4 +20,6 @@ public class UserDTO {
 
     @NotBlank(message = "Поле 'password' обязательно")
     private String password;
+
+    private boolean admin = false;
 }

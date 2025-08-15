@@ -55,6 +55,10 @@ public class AuthService {
 
         refreshTokenRepository.save(refreshToken);
 
+        return getTokens(response, user, refreshToken);
+    }
+
+    private ResponseEntity<String> getTokens(HttpServletResponse response, User user, RefreshToken refreshToken) {
         String cookieValue = "refresh_token=" + refreshToken.getRefreshToken();
         String cookieAttributes =
                 "; Path=/" +
@@ -63,6 +67,9 @@ public class AuthService {
                         "; Secure" +
                         "; SameSite=Strict";
         response.addHeader("Set-Cookie", cookieValue + cookieAttributes);
+        if(user.isAdmin()){
+            return ResponseEntity.ok(jwtService.generateToken(user, List.of("USER", "ADMIN")));
+        }
         return ResponseEntity.ok(jwtService.generateToken(user, List.of("USER")));
     }
 
@@ -92,19 +99,8 @@ public class AuthService {
         if(refreshToken == null){
             return ResponseEntity.badRequest().body("Login again");
         }
-
         refreshTokenService.deleteByToken(refreshToken.getRefreshToken());
-
         refreshToken = refreshTokenService.createRefreshToken(user);
-
-        String cookieValue = "refresh_token=" + refreshToken.getRefreshToken();
-        String cookieAttributes =
-                "; Path=/" +
-                        "; Max-Age=604800" +
-                        "; HttpOnly" +
-                        "; Secure" +
-                        "; SameSite=Strict";
-        response.addHeader("Set-Cookie", cookieValue + cookieAttributes);
-        return ResponseEntity.ok(jwtService.generateToken(user, List.of("USER")));
+        return getTokens(response, user, refreshToken);
     }
 }

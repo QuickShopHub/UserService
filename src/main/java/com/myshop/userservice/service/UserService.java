@@ -28,6 +28,7 @@ public class UserService {
         user.setEmail(newUser.getEmail());
         user.setId(UUID.randomUUID());
         user.setCreatedAt(LocalDate.now());
+        user.setAdmin(newUser.isAdmin());
 
         if(userRepository.findAllByEmail(newUser.getEmail()) != 0){
             return 1;
