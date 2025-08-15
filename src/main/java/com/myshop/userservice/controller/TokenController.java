@@ -9,10 +9,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/api")
+@RequestMapping(path = "/api/auth")
 public class TokenController {
     private final UserService userService;
     private final AuthService authService;
@@ -22,14 +23,14 @@ public class TokenController {
         this.authService = authService;
     }
 
-    @PostMapping(path = "/auth/login")
+    @PostMapping(path = "/login")
     public ResponseEntity<String> createToken(@RequestBody AuthDTO authDTO, HttpServletResponse response) {
 
         return authService.login(authDTO,  response);
     }
 
     @Transactional
-    @PostMapping(path = "/auth/signup")
+    @PostMapping(path = "/signup")
     public ResponseEntity<String> addUser(@RequestBody UserDTO newUser, HttpServletResponse response) {
 
         if(userService.addUser(newUser) == 1){
@@ -41,9 +42,14 @@ public class TokenController {
         return authService.login(authDTO, response);
     }
 
-    @PostMapping(path = "/auth/refresh")
+    @PostMapping(path = "/refresh")
     public ResponseEntity<String> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
         return authService.refreshAccessToken(request, response);
     }
 
+
+    @PostMapping(path = "/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+        return authService.logout(request, response);
+    }
 }

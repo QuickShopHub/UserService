@@ -103,4 +103,22 @@ public class AuthService {
         refreshToken = refreshTokenService.createRefreshToken(user);
         return getTokens(response, user, refreshToken);
     }
+
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response){
+        String refreshTokenValue = extractRefreshTokenFromCookies(request);
+        if (refreshTokenValue == null) {
+            return ResponseEntity.status(401).body(null);
+        }
+        Optional<RefreshToken> refreshTokenOptional = refreshTokenRepository.findByToken(refreshTokenValue);
+        if(refreshTokenOptional.isEmpty()){
+            return ResponseEntity.status(401).body(null);
+        }
+        refreshTokenRepository.delete(refreshTokenOptional.get());
+
+        String cookieValue = "refresh_token=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict";
+        response.addHeader("Set-Cookie", cookieValue);
+
+        return ResponseEntity.ok().body("Logout");
+    }
+
 }

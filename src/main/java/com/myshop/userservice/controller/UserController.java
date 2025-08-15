@@ -2,7 +2,6 @@ package com.myshop.userservice.controller;
 
 import com.myshop.userservice.DTO.*;
 import com.myshop.userservice.service.UserService;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
