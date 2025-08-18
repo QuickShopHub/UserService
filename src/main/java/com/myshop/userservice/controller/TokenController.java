@@ -2,16 +2,17 @@ package com.myshop.userservice.controller;
 
 import com.myshop.userservice.DTO.AuthDTO;
 import com.myshop.userservice.DTO.UserDTO;
+import com.myshop.userservice.DTO.ResponseDTO;
 import com.myshop.userservice.service.AuthService;
 import com.myshop.userservice.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping(path = "/api/auth")
 public class TokenController {
@@ -24,17 +25,19 @@ public class TokenController {
     }
 
     @PostMapping(path = "/login")
-    public ResponseEntity<String> createToken(@RequestBody AuthDTO authDTO, HttpServletResponse response) {
+    public ResponseEntity<ResponseDTO> createToken(@RequestBody AuthDTO authDTO, HttpServletResponse response) {
 
         return authService.login(authDTO,  response);
     }
 
     @Transactional
     @PostMapping(path = "/signup")
-    public ResponseEntity<String> addUser(@RequestBody UserDTO newUser, HttpServletResponse response) {
+    public ResponseEntity<ResponseDTO> addUser(@RequestBody UserDTO newUser, HttpServletResponse response) {
 
         if(userService.addUser(newUser) == 1){
-            return ResponseEntity.badRequest().body("Email уже существует");
+            ResponseDTO responseDTO = new ResponseDTO();
+            responseDTO.setMessage("Email занят");
+            return ResponseEntity.badRequest().body(responseDTO);
         }
         AuthDTO authDTO =  new AuthDTO();
         authDTO.setEmail(newUser.getEmail());

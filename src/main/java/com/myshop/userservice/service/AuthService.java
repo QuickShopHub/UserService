@@ -2,6 +2,7 @@ package com.myshop.userservice.service;
 
 
 import com.myshop.userservice.DTO.AuthDTO;
+import com.myshop.userservice.DTO.ResponseDTO;
 import com.myshop.userservice.repository.RefreshToken;
 import com.myshop.userservice.repository.RefreshTokenRepository;
 import com.myshop.userservice.repository.User;
@@ -45,20 +46,25 @@ public class AuthService {
                 .orElse(null);
     }
 
-    public ResponseEntity<String> login(AuthDTO authDTO, HttpServletResponse response) {
+    public ResponseEntity<ResponseDTO> login(AuthDTO authDTO, HttpServletResponse response) {
         User user = userRepository.findByEmailAndPassword(authDTO.getEmail(), authDTO.getPassword());
+        ResponseDTO responseDTO = new ResponseDTO();
         if(user == null){
-            return ResponseEntity.badRequest().body("Неверный пароль");
+            responseDTO.setMessage("Неверный email или пароль");
+            return ResponseEntity.badRequest().body(responseDTO);
         }
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
         refreshTokenRepository.save(refreshToken);
 
-        return getTokens(response, user, refreshToken);
+        responseDTO.setToken(getTokens(response, user, refreshToken));
+        responseDTO.setUser(user);
+
+        return ResponseEntity.ok(responseDTO);
     }
 
-    private ResponseEntity<String> getTokens(HttpServletResponse response, User user, RefreshToken refreshToken) {
+    private String getTokens(HttpServletResponse response, User user, RefreshToken refreshToken) {
         String cookieValue = "refresh_token=" + refreshToken.getRefreshToken();
         String cookieAttributes =
                 "; Path=/" +
@@ -68,9 +74,9 @@ public class AuthService {
                         "; SameSite=Strict";
         response.addHeader("Set-Cookie", cookieValue + cookieAttributes);
         if(user.isAdmin()){
-            return ResponseEntity.ok(jwtService.generateToken(user, List.of("USER", "ADMIN")));
+            return jwtService.generateToken(user, List.of("USER", "ADMIN"));
         }
-        return ResponseEntity.ok(jwtService.generateToken(user, List.of("USER")));
+        return jwtService.generateToken(user, List.of("USER"));
     }
 
     public ResponseEntity<String> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
@@ -101,7 +107,7 @@ public class AuthService {
         }
         refreshTokenService.deleteByToken(refreshToken.getRefreshToken());
         refreshToken = refreshTokenService.createRefreshToken(user);
-        return getTokens(response, user, refreshToken);
+        return ResponseEntity.ok(getTokens(response, user, refreshToken));
     }
 
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response){
