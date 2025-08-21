@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,14 +31,17 @@ public class TokenController {
         return authService.login(authDTO,  response);
     }
 
-    @Transactional
+
     @PostMapping(path = "/signup")
     public ResponseEntity<ResponseDTO> addUser(@RequestBody UserDTO newUser, HttpServletResponse response) {
-
-        if(userService.addUser(newUser) == 1){
+        int code = userService.addUser(newUser);
+        if(code == 1){
             ResponseDTO responseDTO = new ResponseDTO();
             responseDTO.setMessage("Email занят");
             return ResponseEntity.badRequest().body(responseDTO);
+        }
+        else if(code == 2){
+            return ResponseEntity.internalServerError().build();
         }
         AuthDTO authDTO =  new AuthDTO();
         authDTO.setEmail(newUser.getEmail());

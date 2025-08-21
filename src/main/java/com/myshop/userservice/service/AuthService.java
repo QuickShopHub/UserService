@@ -3,6 +3,7 @@ package com.myshop.userservice.service;
 
 import com.myshop.userservice.DTO.AuthDTO;
 import com.myshop.userservice.DTO.ResponseDTO;
+import com.myshop.userservice.config.EmailEncryptionUtil;
 import com.myshop.userservice.repository.RefreshToken;
 import com.myshop.userservice.repository.RefreshTokenRepository;
 import com.myshop.userservice.repository.User;
@@ -12,6 +13,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -35,6 +37,21 @@ public class AuthService {
         this.jwtService = jwtService;
         this.refreshTokenRepository = refreshTokenRepository;
     }
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    private User checkAuth(String password, String Email){
+        try{
+            String emailCode = EmailEncryptionUtil.encodeEmail(Email);
+            User user = userRepository.findUserByEmail(emailCode);
+            if(passwordEncoder.matches(password, user.getPassword())){
+                return user;
+            }
+            else return null;
+        }
+        catch (Exception e){
+            return null;
+        }
+    }
 
     private String extractRefreshTokenFromCookies(HttpServletRequest request) {
         if (request.getCookies() == null) return null;
@@ -47,7 +64,8 @@ public class AuthService {
     }
 
     public ResponseEntity<ResponseDTO> login(AuthDTO authDTO, HttpServletResponse response) {
-        User user = userRepository.findByEmailAndPassword(authDTO.getEmail(), authDTO.getPassword());
+
+        User user = checkAuth(authDTO.getPassword(), authDTO.getEmail());
         ResponseDTO responseDTO = new ResponseDTO();
         if(user == null){
             responseDTO.setMessage("Неверный email или пароль");

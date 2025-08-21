@@ -25,12 +25,10 @@ public class User {
 
     private String password;
 
-    @Email(message = "Некорректный формат email")
     private String email;
 
     @Column(name = "createdat")
     private LocalDate createdAt;
 
     private boolean admin = false;
-
 }
