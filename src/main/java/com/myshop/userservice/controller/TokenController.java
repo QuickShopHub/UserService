@@ -50,7 +50,7 @@ public class TokenController {
     }
 
     @PostMapping(path = "/refresh")
-    public ResponseEntity<String> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ResponseDTO> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
         return authService.refreshAccessToken(request, response);
     }
 

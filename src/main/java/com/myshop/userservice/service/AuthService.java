@@ -97,8 +97,8 @@ public class AuthService {
         return jwtService.generateToken(user, List.of("USER"));
     }
 
-    public ResponseEntity<String> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
-
+    public ResponseEntity<ResponseDTO> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        ResponseDTO responseDTO = new ResponseDTO();
         String refreshTokenValue = extractRefreshTokenFromCookies(request);
         if (refreshTokenValue == null) {
             return ResponseEntity.status(401).body(null);
@@ -108,24 +108,30 @@ public class AuthService {
 
         User user = userRepository.findById(id).orElse(null);
         if(user == null){
-            return ResponseEntity.badRequest().body("User not found");
+            responseDTO.setMessage("User not found");
+            return ResponseEntity.badRequest().body(responseDTO);
         }
 
         Optional<RefreshToken> refreshTokenOptional = refreshTokenRepository.findByToken(refreshTokenValue);
 
         if(refreshTokenOptional.isEmpty()){
-            return ResponseEntity.badRequest().body("Login again");
+            responseDTO.setMessage("Login again");
+            return ResponseEntity.badRequest().body(responseDTO);
         }
 
         RefreshToken refreshToken = refreshTokenOptional.get();
 
         refreshToken = refreshTokenService.verifyExpiration(refreshToken);
         if(refreshToken == null){
-            return ResponseEntity.badRequest().body("Login again");
+            responseDTO.setMessage("Login again");
+            return ResponseEntity.badRequest().body(responseDTO);
         }
         refreshTokenService.deleteByToken(refreshToken.getRefreshToken());
         refreshToken = refreshTokenService.createRefreshToken(user);
-        return ResponseEntity.ok(getTokens(response, user, refreshToken));
+        responseDTO.setUser(user);
+        responseDTO.setToken(getTokens(response, user, refreshToken));
+        responseDTO.setMessage("ok");
+        return ResponseEntity.ok(responseDTO);
     }
 
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response){

@@ -121,6 +121,7 @@ public class JwtService {
             throw ex;
         } catch (JwtException | IllegalArgumentException ex) {
             // Токен некорректный, неверный, подпись не совпадает и т.п.
+            log.error("Invalid JWT token", ex);
             throw new RuntimeException("Invalid JWT token", ex);
         }
     }
