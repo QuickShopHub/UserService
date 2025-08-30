@@ -88,7 +88,6 @@ public class AuthService {
                 "; Path=/" +
                         "; Max-Age=604800" +
                         "; HttpOnly" +
-                        "; Secure" +
                         "; SameSite=Strict";
         response.addHeader("Set-Cookie", cookieValue + cookieAttributes);
         if(user.isAdmin()){

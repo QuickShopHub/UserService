@@ -60,7 +60,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             Authentication auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-            log.info("success authentication");
+
         } catch (ExpiredJwtException ex) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
@@ -75,6 +75,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
         chain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        // исключаем эндпоинт обновления токена из проверки JWT
+        return path.equals("/api/auth/refresh");
     }
 
 }

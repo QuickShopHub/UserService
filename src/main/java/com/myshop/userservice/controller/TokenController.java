@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping(path = "/api/auth")
+@CrossOrigin(origins = {"http://26.94.50.207:4200", "http://localhost:4200", "http://localhost:80", "http://localhost"})
 public class TokenController {
     private final UserService userService;
     private final AuthService authService;
@@ -34,6 +35,7 @@ public class TokenController {
 
     @PostMapping(path = "/signup")
     public ResponseEntity<ResponseDTO> addUser(@RequestBody UserDTO newUser, HttpServletResponse response) {
+
         int code = userService.addUser(newUser);
         if(code == 1){
             ResponseDTO responseDTO = new ResponseDTO();

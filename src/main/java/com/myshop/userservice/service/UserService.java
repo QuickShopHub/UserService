@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -52,7 +53,7 @@ public class UserService {
 
 
 
-    public ResponseEntity<String> updateEmail(EmailChange emailChange){
+    public ResponseEntity<Map<String, String>> updateEmail(EmailChange emailChange){
         String emailCodeNew = null;
         String emailCodeLast = null;
         try {
@@ -64,38 +65,38 @@ public class UserService {
         }
 
         if(userRepository.findAllByEmail(emailCodeNew) != 0){
-            return ResponseEntity.badRequest().body("Email уже существует");
+            return ResponseEntity.badRequest().body(Map.of( "message" ,"Email уже существует"));
         }
 
 
         User user = checkAuth(emailChange.getPassword(), emailChange.getEmail());
         if(user == null){
-            return ResponseEntity.badRequest().body("Неверный пароль");
+            return ResponseEntity.badRequest().body(Map.of( "message" ,"Неверный пароль"));
         }
 
 
         user.setEmail(emailCodeNew);
         userRepository.save(user);
-        return ResponseEntity.ok("Email updated");
+        return ResponseEntity.ok(Map.of( "message" ,"Email updated"));
     }
 
-    public ResponseEntity<String> updateName(NameChange nameChange){
+    public ResponseEntity<Map<String, String>> updateName(NameChange nameChange){
         User user = checkAuth(nameChange.getPassword(), nameChange.getEmail());
         if(user == null){
-            return ResponseEntity.badRequest().body("Неверный пароль");
+            return ResponseEntity.badRequest().body(Map.of( "message" ,"Неверный пароль"));
         }
         user.setUsername(nameChange.getUsername());
         userRepository.save(user);
-        return ResponseEntity.ok("UserName updated");
+        return ResponseEntity.ok(Map.of( "message" ,"UserName updated"));
     }
 
-    public ResponseEntity<String> updatePassword(PasswordChange passwordChange){
+    public ResponseEntity<Map<String, String>> updatePassword(PasswordChange passwordChange){
 
 
         User user = checkAuth(passwordChange.getPassword(), passwordChange.getEmail());
 
         if(user == null){
-            return ResponseEntity.badRequest().body("Неверный пароль");
+            return ResponseEntity.badRequest().body(Map.of( "message" ,"Неверный пароль"));
         }
 
 
@@ -103,7 +104,7 @@ public class UserService {
 
 
         userRepository.save(user);
-        return ResponseEntity.ok("Password updated");
+        return ResponseEntity.ok(Map.of( "message" ,"Password updated"));
     }
 
     private User checkAuth(String password, String Email){
@@ -119,6 +120,4 @@ public class UserService {
             return null;
         }
     }
-
-
 }

@@ -6,7 +6,7 @@
 
     <groupId>com.myshop.userservice</groupId>
     <artifactId>UserService</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -98,7 +98,14 @@
 
 
     </dependencies>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 
 </project>
